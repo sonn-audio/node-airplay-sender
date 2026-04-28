@@ -68,7 +68,7 @@ export interface AirplayMetadata {
 }
 
 export interface LoxAirplayEvent {
-  event: string;
+  event: 'device' | 'buffer' | 'error' | 'metrics' | 'session-ended' | string;
   message?: string;
   detail?: any;
 }
@@ -109,6 +109,9 @@ export class LoxAirplaySender extends EventEmitter {
     }) as LegacyAirTunesInstance;
     this.airtunes.on('device', (key: string, status: string, desc: string) => {
       onEvent?.({ event: 'device', message: status, detail: { key, desc } });
+      if (status === 'stopped') {
+        onEvent?.({ event: 'session-ended', message: desc || 'stopped', detail: { key, reason: desc || 'stopped' } });
+      }
     });
     this.airtunes.on('buffer', (status: string) => {
       onEvent?.({ event: 'buffer', message: status });

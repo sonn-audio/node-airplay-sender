@@ -178,21 +178,22 @@ class HttpClient implements HttpClientApi {
             );
 
             this.socket.on('data', data => {
+                const chunk = Buffer.isBuffer(data) ? data : Buffer.from(data);
                 if (!this.pendingResponse)
                 {
                     // there is no response pending, parse the data.
-                    this.parseResponse(data);
+                    this.parseResponse(chunk);
                 }
                 else
                 {
                     // incoming data for the pending response.
                     const existing = this.pendingResponse.res.body ?? Buffer.alloc(0);
                     this.pendingResponse.res.body = Buffer.concat(
-                        [existing, data],
-                        data.byteLength + existing.byteLength
+                        [existing, chunk],
+                        chunk.byteLength + existing.byteLength
                     );
 
-                    this.pendingResponse.remaining -= data.byteLength;
+                    this.pendingResponse.remaining -= chunk.byteLength;
                     if (this.pendingResponse.remaining === 0)
                     {
                         // all remaining data for the pending response has been read; resolve the promise for the 

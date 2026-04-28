@@ -61,6 +61,7 @@ Creates and starts a sender for one AirPlay device. Returns the instance so you 
 
 **Events** (sent to `onEvent` callback)
 - `device`: `{ event: "device", message: status, detail: { key, desc } }`
+- `session-ended`: `{ event: "session-ended", message: reason, detail: { key, reason } }`
 - `buffer`: `{ event: "buffer", message: status }` where status is `buffering|playing|drain|end`
 - `error`: `{ event: "error", message }`
 - `metrics`: `{ event: "metrics", detail }` sync drift snapshots emitted on each sync tick when enabled.

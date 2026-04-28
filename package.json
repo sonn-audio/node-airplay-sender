@@ -1,6 +1,6 @@
 {
   "name": "@lox-audioserver/node-airplay-sender",
-  "version": "0.4.7",
+  "version": "0.4.8",
   "description": "AirPlay sender (RAOP/AirPlay 1; AirPlay 2 control/auth, best-effort audio)",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

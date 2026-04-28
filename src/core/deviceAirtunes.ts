@@ -116,7 +116,7 @@ type AirTunesDeviceInstance = EventEmitter & {
   logLine?: (...args: any[]) => void;
   doHandshake: () => void;
   relayAudio: () => void;
-  cleanup: () => void;
+  cleanup: (reason?: string) => void;
 };
 
 /**
@@ -278,7 +278,7 @@ AirTunesDevice.prototype.start = function (this: AirTunesDeviceInstance): void {
     if(err) {
       this.logLine?.(err.code);
       this.status = 'stopped';
-      this.emit('status', 'stopped');
+      this.emit('status', 'stopped', 'udp_ports');
       this.logLine?.('port issues');
       this.emit('error', 'udp_ports', err.code);
 
@@ -345,11 +345,12 @@ AirTunesDevice.prototype.doHandshake = function (this: AirTunesDeviceInstance): 
   });
 
   this.rtsp.on('end', (err: any) => {
-    this.logLine?.(err);
-    this.cleanup();
+    const reason = err == null ? 'unknown' : String(err);
+    this.logLine?.(reason);
+    this.cleanup(reason);
 
-    if(err !== 'stopped')
-      this.emit(err);
+    if(reason !== 'stopped')
+      this.emit(reason);
   });
   } catch(e){
     this.logLine?.(e)
@@ -458,11 +459,14 @@ AirTunesDevice.prototype.onSyncNeeded = function (this: AirTunesDeviceInstance, 
   //if ( this.airplay2)this.rtsp.sendControlSync(seq, this, this.rtsp);
 };
 
-AirTunesDevice.prototype.cleanup = function (this: AirTunesDeviceInstance): void {
+AirTunesDevice.prototype.cleanup = function (
+  this: AirTunesDeviceInstance,
+  reason = 'stopped',
+): void {
   this.audioSocket = null;
   this.audioPacketHistory = null;
   this.status = 'stopped';
-  this.emit('status', 'stopped');
+  this.emit('status', 'stopped', reason);
   // console.debug('stop');
   if(this.audioCallback) {
     this.audioOut.removeListener('packet', this.audioCallback);

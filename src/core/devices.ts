@@ -71,7 +71,7 @@ export default class Devices extends EventEmitter implements DevicesEmitter {
 
     this.devices[dev.key] = dev;
 
-    dev.on('status', (status: DeviceStatus) => {
+    dev.on('status', (status: DeviceStatus, desc = '') => {
       if (status === 'error' || status === 'stopped') {
         delete this.devices[dev.key];
         this.checkAirTunesDevices();
@@ -81,7 +81,7 @@ export default class Devices extends EventEmitter implements DevicesEmitter {
         this.emit('need_sync');
       }
 
-      this.emit('status', dev.key, status, '');
+      this.emit('status', dev.key, status, desc);
     });
 
     dev.start();
