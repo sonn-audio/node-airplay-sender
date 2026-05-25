@@ -16,6 +16,7 @@ type LegacyAirTunesInstance = {
   setPasscode: (deviceKey: string, passcode: string) => void;
   write: (chunk: Buffer) => boolean;
   end: () => void;
+  reset: () => void;
   on: (event: string, cb: (...args: any[]) => void) => void;
 };
 
@@ -149,6 +150,15 @@ export class LoxAirplaySender extends EventEmitter {
   public sendPcm(chunk: Buffer): void {
     if (!this.airtunes || !this.started) return;
     this.airtunes.write(chunk);
+  }
+
+  /**
+   * Clear the internal circular buffer without tearing down the RTSP session.
+   * Use on track switches to drop buffered PCM in place of a full restart.
+   */
+  public reset(): void {
+    if (!this.airtunes) return;
+    this.airtunes.reset();
   }
 
   /**
