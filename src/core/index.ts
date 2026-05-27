@@ -102,9 +102,14 @@ class AirTunes extends Duplex {
     this.devices.setTrackInfo(deviceKey, name, artist, album, callback);
   }
 
-  /** Reset the circular buffer state. */
+  /**
+   * Flush buffered audio for a track switch: clear our circular buffer and tell
+   * every receiver to drop its buffered audio and re-anchor at the current RTP
+   * position. Keeps the RTP timeline continuous so playback does not desync.
+   */
   public reset(): void {
     this.circularBuffer.reset();
+    this.devices.flush();
   }
 
   /** Send artwork to a device. */

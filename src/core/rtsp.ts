@@ -341,6 +341,17 @@ Client.prototype.setVolume = function(this: ClientInstance, volume: number, call
   this.sendNextRequest();
 };
 
+// Drop the receiver's buffered audio and re-anchor playback at the current RTP
+// position (RTP-Info: seq=lastSeq+1). Used on track switch/scrub so the new
+// track starts cleanly instead of replaying stale buffered frames.
+Client.prototype.flush = function(this: ClientInstance) {
+  if(this.status !== PLAYING)
+    return;
+
+  this.status = FLUSH;
+  this.sendNextRequest();
+};
+
 Client.prototype.setProgress = function(this: ClientInstance, progress: number, duration: number, callback?: (err?: unknown) => void) {
   if(this.status !== PLAYING)
     return;

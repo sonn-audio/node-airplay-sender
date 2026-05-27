@@ -19,6 +19,7 @@ type RTSPClient = {
   once: (event: string, cb: (...args: any[]) => void) => void;
   startHandshake: (udpServers: any, host: string, port: number) => void;
   teardown: () => void;
+  flush: () => void;
   setVolume: (volume: number, callback?: (err?: unknown) => void) => void;
   setTrackInfo: (name: string, artist?: string, album?: string, callback?: (err?: unknown) => void) => void;
   setProgress: (progress: number, duration: number, callback?: (err?: unknown) => void) => void;
@@ -497,6 +498,11 @@ AirTunesDevice.prototype.stop = function (this: AirTunesDeviceInstance, cb?: () 
 AirTunesDevice.prototype.setVolume = function (this: AirTunesDeviceInstance, volume: number, callback?: (err?: unknown) => void): void {
   if (!this.rtsp) return;
   this.rtsp.setVolume(volume, callback);
+};
+
+AirTunesDevice.prototype.flush = function (this: AirTunesDeviceInstance): void {
+  if (!this.rtsp) return;
+  this.rtsp.flush();
 };
 
 AirTunesDevice.prototype.setTrackInfo = function (this: AirTunesDeviceInstance, name: string, artist?: string, album?: string, callback?: (err?: unknown) => void): void {

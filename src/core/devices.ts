@@ -89,6 +89,17 @@ export default class Devices extends EventEmitter implements DevicesEmitter {
     return dev;
   }
 
+  /** Flush buffered audio on every device, re-anchoring playback at the current RTP position. */
+  public flush(): void {
+    this.forEach((dev) => {
+      try {
+        dev.flush?.();
+      } catch {
+        // ignore
+      }
+    });
+  }
+
   /** Adjust volume on one device. */
   public setVolume(key: string, volume: number, callback?: (err?: unknown) => void): void {
     const dev = this.devices[key];
